@@ -127,3 +127,31 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+raw_data/auxilio_emergencial/202004
+raw_data/auxilio_emergencial/202005
+raw_data/auxilio_emergencial/202006
+raw_data/auxilio_emergencial/202007
+raw_data/auxilio_emergencial/202008
+raw_data/auxilio_emergencial/202009
+raw_data/auxilio_emergencial/202010
+raw_data/auxilio_emergencial/202011
+raw_data/auxilio_emergencial/202012
+raw_data/auxilio_emergencial/202101
+raw_data/auxilio_emergencial/202102
+raw_data/auxilio_emergencial/202103
+raw_data/auxilio_emergencial/202104
+raw_data/auxilio_emergencial/202105
+raw_data/auxilio_emergencial/202106
+raw_data/auxilio_emergencial/202107
+raw_data/auxilio_emergencial/202108
+raw_data/auxilio_emergencial/202109
+raw_data/auxilio_emergencial/202110
+raw_data/auxilio_emergencial/202111
+raw_data/auxilio_emergencial/202112
+raw_data/auxilio_emergencial/202201
+raw_data/auxilio_emergencial/202202
+raw_data/auxilio_emergencial/202203
+raw_data/auxilio_emergencial/202204
+raw_data/auxilio_emergencial/202205
+raw_data/auxilio_emergencial/202206
+raw_data/auxilio_emergencial/*.csv
