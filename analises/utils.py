@@ -69,16 +69,20 @@ def criar_dataset_completo():
 
     bolsa_familia = concat_dfs(f"parsed_data/bolsa_familia/{data_type}")
 
+    internacoes = concat_dfs(f"parsed_data/sih")
+    internacoes["date"] = pd.to_datetime(internacoes["date"])
+
     # suicidios = pd.read_csv("parsed_data/suicidios/suicidios.csv")
     # suicidios["date"] = pd.to_datetime(suicidios["date"])
     # suicidios["municipio_ibge"] = suicidios["municipio_ibge"].astype(float)
 
     populacao = pd.read_csv("parsed_data/municipios/populacao.csv")
 
-    internacoes = pd.read_csv("parsed_data/internacoes/internacoes.csv")
-    internacoes["date"] = pd.to_datetime(internacoes["date"])
-    internacoes["municipio_ibge6"] = internacoes["municipio_ibge6"].astype(
-        float
+    p_ambulatoriais = pd.read_csv("parsed_data/sia/sia.csv")
+    p_ambulatoriais["date"] = pd.to_datetime(p_ambulatoriais["date"])
+
+    tamanho_familias = pd.read_csv(
+        "parsed_data/tamanho_familias/tamanho_familias.csv"
     )
 
     bolsa_familia = substituir_cod_municipio(bolsa_familia)
@@ -90,7 +94,9 @@ def criar_dataset_completo():
         "municipio_ibge"
     ].astype(int)
     # suicidios["municipio_ibge"] = suicidios["municipio_ibge"].astype(int)
-    internacoes["municipio_ibge6"] = internacoes["municipio_ibge6"].astype(int)
+    p_ambulatoriais["municipio_ibge6"] = p_ambulatoriais[
+        "municipio_ibge6"
+    ].astype(int)
 
     df_all = pd.merge(
         bolsa_familia,
@@ -114,12 +120,20 @@ def criar_dataset_completo():
     )
 
     df_all = pd.merge(
+        df_all, p_ambulatoriais, on=["municipio_ibge6", "date"], how="outer"
+    )
+
+    df_all = pd.merge(
         df_all, internacoes, on=["municipio_ibge6", "date"], how="outer"
+    )
+
+    df_all = pd.merge(
+        df_all, tamanho_familias, on=["municipio_ibge"], how="outer"
     )
 
     df_all = df_all[df_all["municipio_ibge"] != 0]
 
-    df_all["internacao_jovens"] = (
+    df_all["ambulatoriais_jovens"] = (
         df_all["Menor 1 ano"]
         + df_all["1 a 4 anos"]
         + df_all["5 a 9 anos"]
@@ -144,9 +158,18 @@ def criar_dataset_completo():
         "municipio_ibge6",
         "populacao",
         "nome",
-        "total_internacoes_psico",
-        "total_internacoes_geral",
-        "internacao_jovens",
+        "total_ambulatoriais_psico",
+        "total_ambulatoriais_geral",
+        "ambulatoriais_jovens",
+        "t_esquizofrenicos",
+        "t_psicoticos",
+        "t_depressao",
+        "t_ansiedade",
+        "t_estresse",
+        "t_comportamentais",
+        "abusos_substancias",
+        "total",
+        "tamanho_medio_familia",
     ]
     df_all = df_all[columns]
 
@@ -164,9 +187,18 @@ def criar_dataset_completo():
         "municipio_ibge6",
         "populacao",
         "nome_municipio",
-        "total_internacoes_psico",
-        "total_internacoes_geral",
-        "internacao_jovens",
+        "total_ambulatoriais_psico",
+        "total_ambulatoriais_geral",
+        "ambulatoriais_jovens",
+        "t_esquizofrenicos",
+        "t_psicoticos",
+        "t_depressao",
+        "t_ansiedade",
+        "t_estresse",
+        "t_comportamentais",
+        "abusos_substancias",
+        "total_transtornos",
+        "tamanho_medio_familia",
     ]
 
     date_mask = (df_all["date"] >= "2019-08") & (df_all["date"] <= "2020-12")
@@ -178,6 +210,38 @@ def criar_dataset_completo():
     df_all["beneficiarios_auxilio_emergencial"] = df_all[
         "beneficiarios_auxilio_emergencial"
     ].fillna(0)
+    df_all["tamanho_medio_familia"] = df_all["tamanho_medio_familia"].fillna(0)
+
+    # df_all["beneficiarios_auxilio_emergencial"] = (
+    #     df_all["beneficiarios_auxilio_emergencial"]
+    #     * df_all["tamanho_medio_familia"]
+    # )
+
+    df_all[
+        [
+            "t_esquizofrenicos",
+            "t_psicoticos",
+            "t_depressao",
+            "t_ansiedade",
+            "t_estresse",
+            "t_comportamentais",
+            "abusos_substancias",
+            "total_transtornos",
+        ]
+    ] = df_all[
+        [
+            "t_esquizofrenicos",
+            "t_psicoticos",
+            "t_depressao",
+            "t_ansiedade",
+            "t_estresse",
+            "t_comportamentais",
+            "abusos_substancias",
+            "total_transtornos",
+        ]
+    ].fillna(
+        0
+    )
 
     # Dropando municipios sem dados de populacao (37 linhas)
     df_all.dropna(subset="populacao", inplace=True)
@@ -210,18 +274,48 @@ def criar_dataset_completo():
         df_all["beneficiarios_bolsa_familia"] / df_all["populacao"]
     )
 
-    df_all["taxa_internacoes"] = (
-        df_all["total_internacoes_psico"] / df_all["total_internacoes_geral"]
-    )
-    df_all["taxa_internacoes_jovens"] = (
-        df_all["internacao_jovens"] / df_all["total_internacoes_geral"]
-    )
+    df_all["cobertura_total"] = df_all["cobertura_ae"] + df_all["cobertura_bf"]
 
-    df_all["internacoes_por_100"] = (
-        df_all["total_internacoes_psico"] * 100
+    # df_all["taxa_ambulatoriais"] = (
+    #     df_all["total_ambulatoriais_psico"] / df_all["total_ambulatoriais_geral"]
+    # )
+    # df_all["taxa_ambulatoriais_jovens"] = (
+    #     df_all["ambulatoriais_jovens"] / df_all["total_ambulatoriais_geral"]
+    # )
+
+    df_all["ambulatoriais_por_100"] = (
+        df_all["total_ambulatoriais_psico"] * 100
     ) / df_all["populacao"]
-    df_all["internacoes_jovens_por_100"] = (
-        df_all["internacao_jovens"] * 100
+    df_all["ambulatoriais_jovens_por_100"] = (
+        df_all["ambulatoriais_jovens"] * 100
+    ) / df_all["populacao"]
+    df_all["t_esquizofrenicos_por_100"] = (
+        df_all["t_esquizofrenicos"] * 100
+    ) / df_all["populacao"]
+    df_all["t_psicoticos_por_100"] = (df_all["t_psicoticos"] * 100) / df_all[
+        "populacao"
+    ]
+    df_all["t_depressao_por_100"] = (df_all["t_depressao"] * 100) / df_all[
+        "populacao"
+    ]
+    df_all["t_ansiedade_por_100"] = (df_all["t_ansiedade"] * 100) / df_all[
+        "populacao"
+    ]
+    df_all["t_estresse_por_100"] = (df_all["t_estresse"] * 100) / df_all[
+        "populacao"
+    ]
+    df_all["t_comportamentais_por_100"] = (
+        df_all["t_comportamentais"] * 100
+    ) / df_all["populacao"]
+    df_all["abusos_substancias_por_100"] = (
+        df_all["abusos_substancias"] * 100
+    ) / df_all["populacao"]
+    df_all["total_transtornos_por_100"] = (
+        df_all["total_transtornos"] * 100
     ) / df_all["populacao"]
 
     return df_all
+
+
+if __name__ == "__main__":
+    criar_dataset_completo()
