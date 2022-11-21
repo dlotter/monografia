@@ -107,6 +107,7 @@ for y in anos:
             "DT_INTER",
             "MUNIC_RES",
             "DIAG_PRINC",
+            "IDADE",
         ]
         todos = todos[colunas_relevantes]
         todos.rename(
@@ -122,14 +123,32 @@ for y in anos:
         internacoes = pd.DataFrame(columns=["municipio_ibge6"])
         for transtorno in cid10_transtornos:
             filter_list = cid10_transtornos[transtorno]
-            cid10 = todos[todos["DIAG_PRINC"].isin(filter_list)]
+            mask = todos["DIAG_PRINC"].isin(filter_list)
+            mask_jovens = todos["IDADE"] <= 29
+            cid10 = todos[mask]
+            cid10_jovens = todos[(mask) & (mask_jovens)]
             internacoes_por_municipio = (
                 cid10.groupby("municipio_ibge6").size().reset_index()
             )
+            internacoes_por_municipio_jovens = (
+                cid10_jovens.groupby("municipio_ibge6").size().reset_index()
+            )
             internacoes_por_municipio.columns = ["municipio_ibge6", transtorno]
+            internacoes_por_municipio_jovens.columns = [
+                "municipio_ibge6",
+                transtorno + "_jovens",
+            ]
+
+            internacoes_transtorno = pd.merge(
+                internacoes_por_municipio,
+                internacoes_por_municipio_jovens,
+                how="outer",
+                on="municipio_ibge6",
+            )
+
             internacoes = pd.merge(
                 internacoes,
-                internacoes_por_municipio,
+                internacoes_transtorno,
                 how="outer",
                 on="municipio_ibge6",
             )
@@ -145,6 +164,16 @@ for y in anos:
             + internacoes["t_comportamentais"]
             + internacoes["abusos_substancias"]
         )
+        internacoes["total_jovens"] = (
+            internacoes["t_esquizofrenicos_jovens"]
+            + internacoes["t_psicoticos_jovens"]
+            + internacoes["t_depressao_jovens"]
+            + internacoes["t_ansiedade_jovens"]
+            + internacoes["t_estresse_jovens"]
+            + internacoes["t_comportamentais_jovens"]
+            + internacoes["abusos_substancias_jovens"]
+        )
+
         internacoes = internacoes[
             [
                 "date",
@@ -157,6 +186,14 @@ for y in anos:
                 "t_comportamentais",
                 "abusos_substancias",
                 "total",
+                "t_esquizofrenicos_jovens",
+                "t_psicoticos_jovens",
+                "t_depressao_jovens",
+                "t_ansiedade_jovens",
+                "t_estresse_jovens",
+                "t_comportamentais_jovens",
+                "abusos_substancias_jovens",
+                "total_jovens",
             ]
         ]
         internacoes.to_csv(
