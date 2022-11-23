@@ -194,3 +194,4 @@ raw_data/bolsa_familia/files/202206
 raw_data/bolsa_familia/files/*.csv
 
 raw_data/tamanho_familias/base_amostra_familia_201812.csv
+.vscode/launch.json

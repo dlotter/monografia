@@ -169,6 +169,14 @@ def criar_dataset_completo():
         "t_comportamentais",
         "abusos_substancias",
         "total",
+        "t_esquizofrenicos_jovens",
+        "t_psicoticos_jovens",
+        "t_depressao_jovens",
+        "t_ansiedade_jovens",
+        "t_estresse_jovens",
+        "t_comportamentais_jovens",
+        "abusos_substancias_jovens",
+        "total_jovens",
         "tamanho_medio_familia",
     ]
     df_all = df_all[columns]
@@ -198,6 +206,14 @@ def criar_dataset_completo():
         "t_comportamentais",
         "abusos_substancias",
         "total_transtornos",
+        "t_esquizofrenicos_jovens",
+        "t_psicoticos_jovens",
+        "t_depressao_jovens",
+        "t_ansiedade_jovens",
+        "t_estresse_jovens",
+        "t_comportamentais_jovens",
+        "abusos_substancias_jovens",
+        "total_transtornos_jovens",
         "tamanho_medio_familia",
     ]
 
@@ -227,6 +243,14 @@ def criar_dataset_completo():
             "t_comportamentais",
             "abusos_substancias",
             "total_transtornos",
+            "t_esquizofrenicos_jovens",
+            "t_psicoticos_jovens",
+            "t_depressao_jovens",
+            "t_ansiedade_jovens",
+            "t_estresse_jovens",
+            "t_comportamentais_jovens",
+            "abusos_substancias_jovens",
+            "total_transtornos_jovens",
         ]
     ] = df_all[
         [
@@ -238,6 +262,14 @@ def criar_dataset_completo():
             "t_comportamentais",
             "abusos_substancias",
             "total_transtornos",
+            "t_esquizofrenicos_jovens",
+            "t_psicoticos_jovens",
+            "t_depressao_jovens",
+            "t_ansiedade_jovens",
+            "t_estresse_jovens",
+            "t_comportamentais_jovens",
+            "abusos_substancias_jovens",
+            "total_transtornos_jovens",
         ]
     ].fillna(
         0
@@ -283,12 +315,15 @@ def criar_dataset_completo():
     #     df_all["ambulatoriais_jovens"] / df_all["total_ambulatoriais_geral"]
     # )
 
+    # SIA
     df_all["ambulatoriais_por_100"] = (
         df_all["total_ambulatoriais_psico"] * 100
     ) / df_all["populacao"]
     df_all["ambulatoriais_jovens_por_100"] = (
         df_all["ambulatoriais_jovens"] * 100
     ) / df_all["populacao"]
+
+    # SIH
     df_all["t_esquizofrenicos_por_100"] = (
         df_all["t_esquizofrenicos"] * 100
     ) / df_all["populacao"]
@@ -312,6 +347,32 @@ def criar_dataset_completo():
     ) / df_all["populacao"]
     df_all["total_transtornos_por_100"] = (
         df_all["total_transtornos"] * 100
+    ) / df_all["populacao"]
+
+    # SIH - jovens
+    df_all["t_esquizofrenicos_jovens_por_100"] = (
+        df_all["t_esquizofrenicos_jovens"] * 100
+    ) / df_all["populacao"]
+    df_all["t_psicoticos_jovens_por_100"] = (
+        df_all["t_psicoticos_jovens"] * 100
+    ) / df_all["populacao"]
+    df_all["t_depressao_jovens_por_100"] = (
+        df_all["t_depressao_jovens"] * 100
+    ) / df_all["populacao"]
+    df_all["t_ansiedade_jovens_por_100"] = (
+        df_all["t_ansiedade_jovens"] * 100
+    ) / df_all["populacao"]
+    df_all["t_estresse_jovens_por_100"] = (
+        df_all["t_estresse_jovens"] * 100
+    ) / df_all["populacao"]
+    df_all["t_comportamentais_jovens_por_100"] = (
+        df_all["t_comportamentais_jovens"] * 100
+    ) / df_all["populacao"]
+    df_all["abusos_substancias_jovens_por_100"] = (
+        df_all["abusos_substancias_jovens"] * 100
+    ) / df_all["populacao"]
+    df_all["total_transtornos_jovens_por_100"] = (
+        df_all["total_transtornos_jovens"] * 100
     ) / df_all["populacao"]
 
     return df_all
